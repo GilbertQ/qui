@@ -83,9 +83,16 @@ const RecordS = () => {
 
   const handleSave = () => {
     const { day, month, year, category, price, note } = formValues;
+    
+    // Validation checks
+    if (!category || !price || isNaN(price) || price <= 0) {
+      alert("Please fill in all required fields correctly.");
+      return;
+    }
+    
     const date = new Date(year, month - 1, day);
     const newRecord = { date, category, price, note };
-
+  
     if (editIndex !== null) {
       const updatedRecords = [...records];
       updatedRecords[editIndex] = newRecord;
@@ -95,6 +102,7 @@ const RecordS = () => {
     }
     handleCancel();
   };
+  
 
   const handleDelete = (index) => {
     setRecords(records.filter((_, i) => i !== index));
@@ -102,20 +110,18 @@ const RecordS = () => {
 
   const downloadCSV = () => {
     if (records.length === 0) return;
-
+  
     const csv = records.map(record => ({
       date: format(new Date(record.date), 'yyyy.MM.dd'),
       category: record.category,
       price: record.price,
       note: record.note
     }));
-
-    const header = Object.keys(csv[0]).join(',');
+  
     const rows = csv.map(row => Object.values(row).join(',')).join('\n');
-    const blob = new Blob([header + '\n' + rows], { type: 'text/csv;charset=utf-8;' });
+    const blob = new Blob([rows], { type: 'text/csv;charset=utf-8;' });
     const now = new Date();
     const filename = format(now, 'yyyyMMddHHmmss') + '.csv';
-
     saveAs(blob, filename);
   };
 
@@ -196,7 +202,7 @@ const RecordS = () => {
           style={{ width: '200px' }}
         />
         <Button variant="contained" startIcon={<AddIcon />} onClick={handleSave}>
-          {editIndex !== null ? 'Save Changes' : 'Add Record'}
+          {editIndex !== null ? '' : ''}
         </Button>
         {editIndex !== null && (
           <Button variant="outlined" onClick={handleCancel} style={{ marginLeft: 10 }}>
