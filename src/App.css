@@ -36,3 +36,22 @@
     transform: rotate(360deg);
   }
 }
+
+.form-container {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 600px) {
+  .form-container > * {
+    flex: 1 1 100%;
+  }
+
+  .form-container {
+    flex-direction: column;
+  }
+}
+

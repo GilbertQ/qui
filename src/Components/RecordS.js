@@ -20,6 +20,7 @@ import format from 'date-fns/format';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
+import CheckIcon from '@mui/icons-material/Check';
 import { saveAs } from 'file-saver';
 
 const categoryOptions = ['Gifts', 'Groceries', 'Eating Out', 'Education', 'Rent / Loan', 'Utilities', 'Car', 'Medical', 'Household', 'Fun', 'Ketzia', 'Marcos', 'Rbk', 'Voluntariado', 'Clothing', 'Transport', 'Parents', 'Crista', 'Taxes', 'Casa-puerto', 'Inversiones', 'Propiedad'];
@@ -34,7 +35,10 @@ const RecordS = () => {
   const currentMonth = currentDate.getMonth() + 1;
   const currentYear = currentDate.getFullYear();
 
-  const [records, setRecords] = useState([]);
+  const [records, setRecords] = useState(() => {
+    const savedRecords = localStorage.getItem('records');
+    return savedRecords ? JSON.parse(savedRecords) : [];
+  });
   const [editIndex, setEditIndex] = useState(null);
   const [formValues, setFormValues] = useState({
     day: currentDay,
@@ -83,41 +87,45 @@ const RecordS = () => {
 
   const handleSave = () => {
     const { day, month, year, category, price, note } = formValues;
-    
-    // Validation checks
+
     if (!category || !price || isNaN(price) || price <= 0) {
       alert("Please fill in all required fields correctly.");
       return;
     }
-    
+
     const date = new Date(year, month - 1, day);
     const newRecord = { date, category, price, note };
-  
+
+    let updatedRecords;
     if (editIndex !== null) {
-      const updatedRecords = [...records];
+      updatedRecords = [...records];
       updatedRecords[editIndex] = newRecord;
-      setRecords(updatedRecords);
+      setEditIndex(null);
     } else {
-      setRecords([...records, newRecord]);
+      updatedRecords = [...records, newRecord];
     }
+
+    setRecords(updatedRecords);
+    localStorage.setItem('records', JSON.stringify(updatedRecords));
     handleCancel();
   };
-  
 
   const handleDelete = (index) => {
-    setRecords(records.filter((_, i) => i !== index));
+    const updatedRecords = records.filter((_, i) => i !== index);
+    setRecords(updatedRecords);
+    localStorage.setItem('records', JSON.stringify(updatedRecords));
   };
 
   const downloadCSV = () => {
     if (records.length === 0) return;
-  
+
     const csv = records.map(record => ({
       date: format(new Date(record.date), 'yyyy.MM.dd'),
       category: record.category,
       price: record.price,
       note: record.note
     }));
-  
+
     const rows = csv.map(row => Object.values(row).join(',')).join('\n');
     const blob = new Blob([rows], { type: 'text/csv;charset=utf-8;' });
     const now = new Date();
@@ -127,7 +135,7 @@ const RecordS = () => {
 
   return (
     <Container>
-      <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginTop: 20 }}>
+      <div className="form-container">
         <FormControl>
           <InputLabel>Day</InputLabel>
           <Select
@@ -201,12 +209,11 @@ const RecordS = () => {
           inputProps={{ maxLength: 50 }}
           style={{ width: '200px' }}
         />
-        <Button variant="contained" startIcon={<AddIcon />} onClick={handleSave}>
-          {editIndex !== null ? '' : ''}
+        <Button variant="contained" startIcon={editIndex === null ? <AddIcon /> : <CheckIcon />} onClick={handleSave}>
         </Button>
         {editIndex !== null && (
           <Button variant="outlined" onClick={handleCancel} style={{ marginLeft: 10 }}>
-            Cancel Edit
+            Cancel
           </Button>
         )}
       </div>
@@ -251,5 +258,3 @@ const RecordS = () => {
 };
 
 export default RecordS;
-
-
