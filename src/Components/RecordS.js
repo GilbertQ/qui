@@ -22,6 +22,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
 import CheckIcon from '@mui/icons-material/Check';
 import { saveAs } from 'file-saver';
+import { Typography } from '@mui/material';
 
 const categoryOptions = ['Gifts', 'Groceries', 'Eating Out', 'Education', 'Rent / Loan', 'Utilities', 'Car', 'Medical', 'Household', 'Fun', 'Ketzia', 'Marcos', 'Rbk', 'Voluntariado', 'Clothing', 'Transport', 'Parents', 'Crista', 'Taxes', 'Casa-puerto', 'Inversiones', 'Propiedad'];
 
@@ -133,91 +134,114 @@ const RecordS = () => {
     saveAs(blob, filename);
   };
 
+  const calculateTotals = (records) => {
+    const uniqueDays = new Set(records.map(record => format(new Date(record.date), 'yyyy-MM-dd')));
+    const totalDays = uniqueDays.size;
+    const totalPrice = records.reduce((sum, record) => sum + parseFloat(record.price), 0);
+    return { totalDays, totalPrice };
+  };
+
+  const { totalDays, totalPrice } = calculateTotals(records);
+
+  const TotalsSummary = ({ totalDays, totalPrice }) => (
+    <Paper style={{ padding: '16px', marginTop: '20px', marginBottom: '20px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <Typography variant="body1">{totalDays} days</Typography>
+        <Typography variant="body1">Q.{totalPrice.toFixed(2)}</Typography>
+      </div>
+    </Paper>
+  );
+
   return (
     <Container>
-      <div className="form-container">
-        <FormControl>
-          <InputLabel>Day</InputLabel>
-          <Select
-            value={formValues.day}
-            onChange={handleChange}
-            name="day"
-          >
-            {days.map(day => (
-              <MenuItem key={day} value={day}>
-                {day}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <FormControl>
-          <InputLabel>Month</InputLabel>
-          <Select
-            value={formValues.month}
-            onChange={handleChange}
-            name="month"
-          >
-            {months.map(month => (
-              <MenuItem key={month} value={month}>
-                {month}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <FormControl>
-          <InputLabel>Year</InputLabel>
-          <Select
-            value={formValues.year}
-            onChange={handleChange}
-            name="year"
-          >
-            {years.map(year => (
-              <MenuItem key={year} value={year}>
-                {year}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <TextField
-          select
-          label="Category"
-          name="category"
-          value={formValues.category}
-          onChange={handleChange}
-          style={{ width: '120px' }}
-        >
-          {categoryOptions.map((option) => (
-            <MenuItem key={option} value={option}>
-              {option}
-            </MenuItem>
-          ))}
-        </TextField>
-        <TextField
-          label="Price"
-          name="price"
-          type="number"
-          value={formValues.price}
-          onChange={handleChange}
-          style={{ width: '100px' }}
-          InputProps={{ inputProps: { min: 0, step: 0.01 } }}
-        />
-        <TextField
-          label="Note"
-          name="note"
-          value={formValues.note}
-          onChange={handleChange}
-          inputProps={{ maxLength: 50 }}
-          style={{ width: '200px' }}
-        />
-        <Button variant="contained" startIcon={editIndex === null ? <AddIcon /> : <CheckIcon />} onClick={handleSave}>
-        </Button>
-        {editIndex !== null && (
-          <Button variant="outlined" onClick={handleCancel} style={{ marginLeft: 10 }}>
-            Cancel
-          </Button>
-        )}
-      </div>
-
+     <div>
+  <div className="form-container">
+    <Button variant="contained" onClick={downloadCSV}>
+    ⇓
+    </Button>
+    <FormControl>
+      <InputLabel>Day</InputLabel>
+      <Select
+        value={formValues.day}
+        onChange={handleChange}
+        name="day"
+      >
+        {days.map(day => (
+          <MenuItem key={day} value={day}>
+            {day}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
+    <FormControl>
+      <InputLabel>Month</InputLabel>
+      <Select
+        value={formValues.month}
+        onChange={handleChange}
+        name="month"
+      >
+        {months.map(month => (
+          <MenuItem key={month} value={month}>
+            {month}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
+    <FormControl>
+      <InputLabel>Year</InputLabel>
+      <Select
+        value={formValues.year}
+        onChange={handleChange}
+        name="year"
+      >
+        {years.map(year => (
+          <MenuItem key={year} value={year}>
+            {year}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
+    <TextField
+      select
+      label="Category"
+      name="category"
+      value={formValues.category}
+      onChange={handleChange}
+      style={{ width: '120px' }}
+    >
+      {categoryOptions.map((option) => (
+        <MenuItem key={option} value={option}>
+          {option}
+        </MenuItem>
+      ))}
+    </TextField>
+    <TextField
+      label="Price"
+      name="price"
+      type="number"
+      value={formValues.price}
+      onChange={handleChange}
+      style={{ width: '100px' }}
+      InputProps={{ inputProps: { min: 0, step: 0.01 } }}
+    />
+    <TextField
+      label="Note"
+      name="note"
+      value={formValues.note}
+      onChange={handleChange}
+      inputProps={{ maxLength: 50 }}
+      style={{ width: '200px' }}
+    />
+    <Button variant="contained" startIcon={editIndex === null ? <AddIcon /> : <CheckIcon />} onClick={handleSave}>
+    </Button>
+    {editIndex !== null && (
+      <Button variant="outlined" onClick={handleCancel} style={{ marginLeft: 10 }}>
+        Cancel
+      </Button>
+    )}
+  </div>
+  <TotalsSummary totalDays={totalDays} totalPrice={totalPrice} />
+</div>
       <TableContainer component={Paper} style={{ marginTop: 20 }}>
         <Table>
           <TableHead>
@@ -249,12 +273,7 @@ const RecordS = () => {
           </TableBody>
         </Table>
       </TableContainer>
-
-      <Button variant="contained" onClick={downloadCSV} style={{ marginTop: 20 }}>
-        Download CSV
-      </Button>
     </Container>
   );
 };
-
 export default RecordS;
