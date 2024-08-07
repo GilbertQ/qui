@@ -156,9 +156,9 @@ const RecordS = () => {
     <Container>
      <div>
   <div className="form-container">
-    <Button variant="contained" onClick={downloadCSV}>
-    ⇓
-    </Button>
+  <Button variant="contained" onClick={downloadCSV} style={{ minWidth: 'auto' }}>
+    <span className="button-content">⇓</span>
+</Button>
     <FormControl>
       <InputLabel>Day</InputLabel>
       <Select
@@ -232,13 +232,28 @@ const RecordS = () => {
       inputProps={{ maxLength: 50 }}
       style={{ width: '200px' }}
     />
-    <Button variant="contained" startIcon={editIndex === null ? <AddIcon /> : <CheckIcon />} onClick={handleSave}>
-    </Button>
-    {editIndex !== null && (
-      <Button variant="outlined" onClick={handleCancel} style={{ marginLeft: 10 }}>
-        Cancel
-      </Button>
-    )}
+<Button 
+  variant="contained" 
+  startIcon={editIndex === null ? <AddIcon /> : <CheckIcon />} 
+  onClick={handleSave}
+  size="small"
+  sx={{ 
+    minWidth: 'unset', 
+    width: 'auto', 
+    padding: '6px'
+  }}
+>
+</Button>
+{editIndex !== null && (
+  <Button 
+    variant="outlined" 
+    onClick={handleCancel} 
+    size="small"
+    sx={{ marginLeft: 1 }}
+  >
+    Cancel
+  </Button>
+)}
   </div>
   <TotalsSummary totalDays={totalDays} totalPrice={totalPrice} />
 </div>

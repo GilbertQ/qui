@@ -57,3 +57,6 @@
   }
 }
 
+.button-content {
+  display: inline-block;
+}
