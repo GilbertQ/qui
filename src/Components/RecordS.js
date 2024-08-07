@@ -156,9 +156,6 @@ const RecordS = () => {
     <Container>
      <div>
   <div className="form-container">
-  <Button variant="contained" onClick={downloadCSV} style={{ minWidth: 'auto' }}>
-    <span className="button-content">⇓</span>
-</Button>
     <FormControl>
       <InputLabel>Day</InputLabel>
       <Select
@@ -254,6 +251,9 @@ const RecordS = () => {
     Cancel
   </Button>
 )}
+  <Button variant="contained" onClick={downloadCSV} style={{ minWidth: 'auto' }}>
+    <span className="button-content">⇓</span>
+</Button>
   </div>
   <TotalsSummary totalDays={totalDays} totalPrice={totalPrice} />
 </div>
