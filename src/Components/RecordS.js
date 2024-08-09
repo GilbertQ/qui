@@ -13,6 +13,8 @@ import {
   TableRow,
   TextField,
   Select,
+  Checkbox,
+  FormControlLabel,
   InputLabel,
   FormControl
 } from '@mui/material';
@@ -21,8 +23,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
 import CheckIcon from '@mui/icons-material/Check';
-import { saveAs } from 'file-saver';
 import { Typography } from '@mui/material';
+import { downloadCSV } from './Helpers';
 
 const categoryOptions = ['Gifts', 'Groceries', 'Eating Out', 'Education', 'Rent / Loan', 'Utilities', 'Car', 'Medical', 'Household', 'Fun', 'Ketzia', 'Marcos', 'Rbk', 'Voluntariado', 'Clothing', 'Transport', 'Parents', 'Crista', 'Taxes', 'Casa-puerto', 'Inversiones', 'Propiedad'];
 
@@ -117,23 +119,6 @@ const RecordS = () => {
     localStorage.setItem('records', JSON.stringify(updatedRecords));
   };
 
-  const downloadCSV = () => {
-    if (records.length === 0) return;
-
-    const csv = records.map(record => ({
-      date: format(new Date(record.date), 'yyyy.MM.dd'),
-      category: record.category,
-      price: record.price,
-      note: record.note
-    }));
-
-    const rows = csv.map(row => Object.values(row).join(',')).join('\n');
-    const blob = new Blob([rows], { type: 'text/csv;charset=utf-8;' });
-    const now = new Date();
-    const filename = format(now, 'yyyyMMddHHmmss') + '.csv';
-    saveAs(blob, filename);
-  };
-
   const calculateTotals = (records) => {
     const uniqueDays = new Set(records.map(record => format(new Date(record.date), 'yyyy-MM-dd')));
     const totalDays = uniqueDays.size;
@@ -151,6 +136,14 @@ const RecordS = () => {
       </div>
     </Paper>
   );
+
+  const [selectedOption, setSelectedOption] = useState('A');
+
+  const handleSelectChange = (event) => {
+    setSelectedOption(event.target.value);
+  };
+
+  const [showTotalsSummary, setShowTotalsSummary] = useState(true);
 
   return (
     <Container>
@@ -251,11 +244,35 @@ const RecordS = () => {
     Cancel
   </Button>
 )}
-  <Button variant="contained" onClick={downloadCSV} style={{ minWidth: 'auto' }}>
+  <Button 
+  variant="contained" 
+  onClick={() => downloadCSV({records})} 
+  style={{ minWidth: 'auto' }}
+>
     <span className="button-content">⇓</span>
 </Button>
+<Select
+  value={selectedOption}
+  onChange={handleSelectChange}
+  variant="outlined"
+  style={{ minWidth: 'auto' }}
+>
+  <MenuItem value="A">A</MenuItem>
+  <MenuItem value="D">D</MenuItem>
+</Select>
   </div>
+  <FormControlLabel
+  control={
+    <Checkbox
+      checked={showTotalsSummary}
+      onChange={(e) => setShowTotalsSummary(e.target.checked)}
+    />
+  }
+  label="Show Totals Summary"
+/>
+{showTotalsSummary && (
   <TotalsSummary totalDays={totalDays} totalPrice={totalPrice} />
+)}
 </div>
       <TableContainer component={Paper} style={{ marginTop: 20 }}>
         <Table>
@@ -269,22 +286,36 @@ const RecordS = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {records.map((record, index) => (
-              <TableRow key={index}>
-                <TableCell>{format(new Date(record.date), 'yyyy.MM.dd')}</TableCell>
-                <TableCell>{record.category}</TableCell>
-                <TableCell>{record.price}</TableCell>
-                <TableCell>{record.note}</TableCell>
-                <TableCell>
-                  <IconButton onClick={() => handleEdit(index)}>
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton onClick={() => handleDelete(index)}>
-                    <DeleteIcon />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
+          {records
+  .filter(record => {
+    if (selectedOption === 'D') {
+      const today = new Date();
+      const recordDate = new Date(record.date);
+      return (
+        recordDate.getDate() === today.getDate() &&
+        recordDate.getMonth() === today.getMonth() &&
+        recordDate.getFullYear() === today.getFullYear()
+      );
+    }
+    return true; // If selectedOption is not 'D', include all records
+  })
+  .map((record, index) => (
+    <TableRow key={index}>
+      <TableCell>{format(new Date(record.date), 'yyyy.MM.dd')}</TableCell>
+      <TableCell>{record.category}</TableCell>
+      <TableCell>{record.price}</TableCell>
+      <TableCell>{record.note}</TableCell>
+      <TableCell>
+        <IconButton onClick={() => handleEdit(index)}>
+          <EditIcon />
+        </IconButton>
+        <IconButton onClick={() => handleDelete(index)}>
+          <DeleteIcon />
+        </IconButton>
+      </TableCell>
+    </TableRow>
+  ))
+}
           </TableBody>
         </Table>
       </TableContainer>
