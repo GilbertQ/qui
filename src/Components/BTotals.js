@@ -5,27 +5,48 @@ import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 const BTotals = ({ records }) => {
-  console.log("BTotalsDebug function called");
   // Aggregate totals by category
   const totalsByCategory = records.reduce((acc, record) => {
-    acc[record.category] = (acc[record.category] || 0) + record.price;
+    const price = parseFloat(record.price) || 0;
+    acc[record.category] = (acc[record.category] || 0) + price;
     return acc;
   }, {});
 
   // Aggregate totals by day
   const totalsByDay = records.reduce((acc, record) => {
     const date = new Date(record.date).toLocaleDateString();
-    acc[date] = (acc[date] || 0) + record.price;
+    const price = parseFloat(record.price) || 0;
+    acc[date] = (acc[date] || 0) + price;
     return acc;
   }, {});
 
-  // Prepare data for the category chart
+  // Convert aggregated totals to fixed-point numbers
+  let formattedTotalsByCategory = Object.fromEntries(
+    Object.entries(totalsByCategory).map(([key, value]) => [key, value.toFixed(2)])
+  );
+
+  let formattedTotalsByDay = Object.fromEntries(
+    Object.entries(totalsByDay).map(([key, value]) => [key, value.toFixed(2)])
+  );
+
+  // Sort totals by category in descending order by total
+  formattedTotalsByCategory = Object.fromEntries(
+    Object.entries(formattedTotalsByCategory)
+      .sort(([, a], [, b]) => parseFloat(b) - parseFloat(a))
+  );
+
+  // Sort totals by day in ascending order by date
+  formattedTotalsByDay = Object.fromEntries(
+    Object.entries(formattedTotalsByDay)
+      .sort(([a], [b]) => new Date(a) - new Date(b))
+  );
+
   const categoryChartData = {
-    labels: Object.keys(totalsByCategory),
+    labels: Object.keys(formattedTotalsByCategory),
     datasets: [
       {
         label: 'Total by Category',
-        data: Object.values(totalsByCategory),
+        data: Object.values(formattedTotalsByCategory),
         fill: false,
         borderColor: 'rgb(75, 192, 192)',
         tension: 0.1,
@@ -33,13 +54,12 @@ const BTotals = ({ records }) => {
     ],
   };
 
-  // Prepare data for the day chart
   const dayChartData = {
-    labels: Object.keys(totalsByDay),
+    labels: Object.keys(formattedTotalsByDay),
     datasets: [
       {
         label: 'Total by Day',
-        data: Object.values(totalsByDay),
+        data: Object.values(formattedTotalsByDay),
         fill: false,
         borderColor: 'rgb(54, 162, 235)',
         tension: 0.1,
@@ -60,5 +80,7 @@ const BTotals = ({ records }) => {
 };
 
 export default BTotals;
+
+
 
 
