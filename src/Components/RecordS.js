@@ -144,9 +144,9 @@ const RecordS = () => {
     setSelectedOption(event.target.value);
   };
 
-  const [showTotalsSummary, setShowTotalsSummary] = useState(true);
-  const [showDetails, setShowDetails] = useState(true);
-  const [showChart, setShowChart] = useState(true);
+  const [showTotalsSummary, setShowTotalsSummary] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
+  const [showChart, setShowChart] = useState(false);
 
   return (
     <Container>
