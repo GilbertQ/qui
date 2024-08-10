@@ -25,6 +25,7 @@ import AddIcon from '@mui/icons-material/Add';
 import CheckIcon from '@mui/icons-material/Check';
 import { Typography } from '@mui/material';
 import { downloadCSV } from './Helpers';
+import BTotals from './BTotals';
 
 const categoryOptions = ['Gifts', 'Groceries', 'Eating Out', 'Education', 'Rent / Loan', 'Utilities', 'Car', 'Medical', 'Household', 'Fun', 'Ketzia', 'Marcos', 'Rbk', 'Voluntariado', 'Clothing', 'Transport', 'Parents', 'Crista', 'Taxes', 'Casa-puerto', 'Inversiones', 'Propiedad'];
 
@@ -144,6 +145,8 @@ const RecordS = () => {
   };
 
   const [showTotalsSummary, setShowTotalsSummary] = useState(true);
+  const [showDetails, setShowDetails] = useState(true);
+  const [showChart, setShowChart] = useState(true);
 
   return (
     <Container>
@@ -251,16 +254,30 @@ const RecordS = () => {
 >
     <span className="button-content">⇓</span>
 </Button>
+
+{showDetails && (
 <Select
   value={selectedOption}
   onChange={handleSelectChange}
   variant="outlined"
+  size="small"
   style={{ minWidth: 'auto' }}
 >
   <MenuItem value="A">A</MenuItem>
   <MenuItem value="D">D</MenuItem>
 </Select>
+  )}
+
   </div>
+  <FormControlLabel
+  control={
+    <Checkbox
+      checked={showDetails}
+      onChange={(e) => setShowDetails(e.target.checked)}
+    />
+  }
+  label="Details"
+  />
   <FormControlLabel
   control={
     <Checkbox
@@ -268,12 +285,28 @@ const RecordS = () => {
       onChange={(e) => setShowTotalsSummary(e.target.checked)}
     />
   }
-  label="Show Totals Summary"
-/>
+  label="Summary"
+  />
+  <FormControlLabel
+  control={
+    <Checkbox
+      checked={showChart}
+      onChange={(e) => setShowChart(e.target.checked)}
+    />
+  }
+  label="Chart"
+  />
 {showTotalsSummary && (
   <TotalsSummary totalDays={totalDays} totalPrice={totalPrice} />
 )}
 </div>
+{showChart && (
+  <div>
+    {BTotals({records})}
+</div>
+)
+}
+{showDetails && (
       <TableContainer component={Paper} style={{ marginTop: 20 }}>
         <Table>
           <TableHead>
@@ -319,6 +352,7 @@ const RecordS = () => {
           </TableBody>
         </Table>
       </TableContainer>
+      )}
     </Container>
   );
 };
