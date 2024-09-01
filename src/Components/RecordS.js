@@ -33,6 +33,13 @@ const days = Array.from({ length: 31 }, (_, i) => i + 1);
 const months = Array.from({ length: 12 }, (_, i) => i + 1);
 const years = Array.from({ length: 101 }, (_, i) => new Date().getFullYear() - i);
 
+const SkullBonesIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24">
+    <path fill="#FFFFFF" d="M12 2C5.373 2 0 7.373 0 14c0 6.627 5.373 12 12 12s12-5.373 12-12c0-6.627-5.373-12-12-12zm0 16c-4.418 0-8-3.582-8-8s3.582-8 8-8 8 3.582 8 8-3.582 8-8 8z" />
+    <path fill="#000000" d="M19 15h-4v-3h-2v3h-4v4h4v-1h3v-1h-2v1h4v-4h2V9h-4V7h-2v1H7v4h4v1h2v-1h-2v-4h-2V5h4V3h-4C7 1 0 7 0 14v2h16z" />
+  </svg>
+);
+
 const RecordS = () => {
   const currentDate = new Date();
   const currentDay = currentDate.getDate();
@@ -140,6 +147,13 @@ const RecordS = () => {
     </Paper>
   );
 
+  const handleClearAll = () => {
+    const confirmed = window.confirm("really sure?");
+    if (confirmed) {
+      setRecords([]);
+      localStorage.removeItem('records'); // Clears the records from localStorage
+    }
+  };
   const [selectedOption, setSelectedOption] = useState('D');
 
   const handleSelectChange = (event) => {
@@ -271,33 +285,42 @@ const RecordS = () => {
           )}
 
         </div>
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={showDetails}
-              onChange={(e) => setShowDetails(e.target.checked)}
-            />
-          }
-          label="Details"
-        />
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={showTotalsSummary}
-              onChange={(e) => setShowTotalsSummary(e.target.checked)}
-            />
-          }
-          label="Summary"
-        />
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={showChart}
-              onChange={(e) => setShowChart(e.target.checked)}
-            />
-          }
-          label="Chart"
-        />
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+  <FormControlLabel
+    control={
+      <Checkbox
+        checked={showDetails}
+        onChange={(e) => setShowDetails(e.target.checked)}
+      />
+    }
+    label="Details"
+  />
+  <FormControlLabel
+    control={
+      <Checkbox
+        checked={showTotalsSummary}
+        onChange={(e) => setShowTotalsSummary(e.target.checked)}
+      />
+    }
+    label="Summary"
+  />
+  <FormControlLabel
+    control={
+      <Checkbox
+        checked={showChart}
+        onChange={(e) => setShowChart(e.target.checked)}
+      />
+    }
+    label="Chart"
+  />
+  <Button
+    variant="outlined"
+    onClick={handleClearAll}
+    style={{ minWidth: 'auto', marginTop: '0' }} // Remove unnecessary margin
+  >
+    <SkullBonesIcon />
+  </Button>
+</div>
         {showTotalsSummary && (
           <TotalsSummary totalDays={totalDays} totalPrice={totalPrice} />
         )}
