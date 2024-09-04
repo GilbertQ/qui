@@ -175,6 +175,13 @@ const RecordS = () => {
     };
   };
 
+  const filtereRecords = (records, filterFn) => {
+    const filteredRecords = filterFn ? records.filter(filterFn) : records;
+    return filteredRecords;
+  };
+
+  const filterRecords = filtereRecords(records, filterRecordsByDate());
+ 
   const { totalDays, totalPrice } = showDetails && selectedOption === 'D'
     ? calculateTotals(records, filterRecordsByDate())
     : calculateTotals(records);
@@ -341,10 +348,10 @@ const RecordS = () => {
         )}
       </div>
       {showChart && (
-        <div>
-          {BTotals({records})}
-        </div>
-      )}
+  <div>
+    {BTotals({ records: showDetails && selectedOption === 'D' ? filterRecords : records })}
+  </div>
+)}
       {showDetails && (
         <TableContainer component={Paper} style={{ marginTop: 20 }}>
           <Table>
