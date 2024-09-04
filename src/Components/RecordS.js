@@ -129,14 +129,13 @@ const RecordS = () => {
     }
   };
 
-  const calculateTotals = (records) => {
-    const uniqueDays = new Set(records.map(record => format(new Date(record.date), 'yyyy-MM-dd')));
+  const calculateTotals = (records, filterFn) => {
+    const filteredRecords = filterFn ? records.filter(filterFn) : records;
+    const uniqueDays = new Set(filteredRecords.map(record => format(new Date(record.date), 'yyyy-MM-dd')));
     const totalDays = uniqueDays.size;
-    const totalPrice = records.reduce((sum, record) => sum + parseFloat(record.price), 0);
+    const totalPrice = filteredRecords.reduce((sum, record) => sum + parseFloat(record.price), 0);
     return { totalDays, totalPrice };
   };
-
-  const { totalDays, totalPrice } = calculateTotals(records);
 
   const TotalsSummary = ({ totalDays, totalPrice }) => (
     <Paper style={{ padding: '16px', marginTop: '20px', marginBottom: '20px' }}>
@@ -163,6 +162,22 @@ const RecordS = () => {
   const [showTotalsSummary, setShowTotalsSummary] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [showChart, setShowChart] = useState(false);
+
+  const filterRecordsByDate = () => {
+    const selectedDate = new Date(formValues.year, formValues.month - 1, formValues.day);
+    return (record) => {
+      const recordDate = new Date(record.date);
+      return (
+        recordDate.getDate() === selectedDate.getDate() &&
+        recordDate.getMonth() === selectedDate.getMonth() &&
+        recordDate.getFullYear() === selectedDate.getFullYear()
+      );
+    };
+  };
+
+  const { totalDays, totalPrice } = showDetails && selectedOption === 'D'
+    ? calculateTotals(records, filterRecordsByDate())
+    : calculateTotals(records);
 
   return (
     <Container>
@@ -241,31 +256,31 @@ const RecordS = () => {
             inputProps={{ maxLength: 50 }}
             style={{ width: '200px' }}
           />
-          <Button 
-            variant="contained" 
-            startIcon={editId === null ? <AddIcon /> : <CheckIcon />} 
+          <Button
+            variant="contained"
+            startIcon={editId === null ? <AddIcon /> : <CheckIcon />}
             onClick={handleSave}
             size="small"
-            sx={{ 
-              minWidth: 'unset', 
-              width: 'auto', 
+            sx={{
+              minWidth: 'unset',
+              width: 'auto',
               padding: '6px'
             }}
           >
           </Button>
           {editId !== null && (
-            <Button 
-              variant="outlined" 
-              onClick={handleCancel} 
+            <Button
+              variant="outlined"
+              onClick={handleCancel}
               size="small"
               sx={{ marginLeft: 1 }}
             >
               Cancel
             </Button>
           )}
-          <Button 
-            variant="contained" 
-            onClick={() => downloadCSV({records})} 
+          <Button
+            variant="contained"
+            onClick={() => downloadCSV({records})}
             style={{ minWidth: 'auto' }}
           >
             <span className="button-content">⇓</span>
@@ -382,4 +397,3 @@ const RecordS = () => {
 };
 
 export default RecordS;
-
