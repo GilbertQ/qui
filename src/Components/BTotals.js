@@ -36,11 +36,19 @@ const BTotals = ({ records }) => {
       .sort(([, a], [, b]) => parseFloat(b) - parseFloat(a))
   );
 
-  // Sort totals by day in ascending order by date
-  formattedTotalsByDay = Object.fromEntries(
-    Object.entries(formattedTotalsByDay)
-      .sort(([a], [b]) => new Date(a) - new Date(b))
-  );
+ // Function to convert date string in DD/MM/YYYY format to a format that can be parsed correctly by `new Date`
+// Function to convert date string in DD/MM/YYYY format to a valid Date object
+const parseDate = (dateStr) => {
+  const [day, month, year] = dateStr.split('/');
+  return new Date(`${year}-${month}-${day}`);
+};
+
+// Sort totals by day in ascending order by custom date format
+formattedTotalsByDay = Object.fromEntries(
+  Object.entries(formattedTotalsByDay)
+    .sort(([a], [b]) => parseDate(a) - parseDate(b)) // Correct date parsing here
+);
+
 
   const categoryChartData = {
     labels: Object.keys(formattedTotalsByCategory),
