@@ -218,20 +218,23 @@ const RecordS = () => {
               ))}
             </Select>
           </FormControl>
-          <FormControl>
-            <InputLabel>Year</InputLabel>
-            <Select
-              value={formValues.year}
-              onChange={handleChange}
-              name="year"
-            >
-              {years.map(year => (
-                <MenuItem key={year} value={year}>
-                  {year}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <FormControl variant="outlined">
+  <InputLabel shrink>
+    Year
+  </InputLabel>
+  <Select
+    value={formValues.year}
+    onChange={handleChange}
+    name="year"
+    notched
+  >
+    {years.map(year => (
+      <MenuItem key={year} value={year}>
+        {year}
+      </MenuItem>
+    ))}
+  </Select>
+</FormControl>
           <TextField
             select
             label="Category"

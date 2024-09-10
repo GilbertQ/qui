@@ -1,5 +1,6 @@
 {
   "homepage": "http://gilbertq.github.io/qui",
+  "main": "main.js",
   "name": "qui",
   "version": "0.1.0",
   "private": true,
@@ -24,6 +25,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "electron": "electron .",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
     "build": "react-scripts build",
@@ -50,6 +52,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.1.0",
+    "electron": "^32.0.2",
     "gh-pages": "^6.1.1",
     "workbox-webpack-plugin": "^7.1.0"
   }
